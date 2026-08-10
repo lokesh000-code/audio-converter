@@ -5,26 +5,62 @@ const multer = require("multer");
 const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
 const crypto = require("crypto");
 const ytdlp = require("yt-dlp-exec");
 
 const app = express();
+
 const PORT = process.env.PORT || 3000;
 
 // ======================================================
-// FFMPEG SETUP
+// FFMPEG
 // ======================================================
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 // ======================================================
-// YOUTUBE COOKIES SETUP
+// TEMP FOLDERS
 // ======================================================
 
-const cookiesPath = path.join(
+// Railway/container-safe temporary storage
+const convertedFolder = path.join(
+    os.tmpdir(),
+    "audio-converter-converted"
+);
+
+const uploadsFolder = path.join(
+    os.tmpdir(),
+    "audio-converter-uploads"
+);
+
+if (!fs.existsSync(convertedFolder)) {
+    fs.mkdirSync(convertedFolder, {
+        recursive: true
+    });
+}
+
+if (!fs.existsSync(uploadsFolder)) {
+    fs.mkdirSync(uploadsFolder, {
+        recursive: true
+    });
+}
+
+// ======================================================
+// YOUTUBE COOKIES
+// ======================================================
+
+const railwayCookiesPath = path.join(
+    os.tmpdir(),
+    "youtube-cookies.txt"
+);
+
+const localCookiesPath = path.join(
     __dirname,
     "youtube-cookies.txt"
 );
+
+let cookiesPath = null;
 
 console.log(
     "YT_COOKIES_BASE64 present:",
@@ -38,20 +74,24 @@ console.log(
         : 0
 );
 
+// Railway cookies
 if (process.env.YT_COOKIES_BASE64) {
     try {
+
         const cookiesData = Buffer.from(
             process.env.YT_COOKIES_BASE64,
             "base64"
         );
 
         fs.writeFileSync(
-            cookiesPath,
+            railwayCookiesPath,
             cookiesData
         );
 
+        cookiesPath = railwayCookiesPath;
+
         console.log(
-            "YouTube cookies loaded ✅"
+            "Railway YouTube cookies loaded ✅"
         );
 
         console.log(
@@ -60,14 +100,28 @@ if (process.env.YT_COOKIES_BASE64) {
         );
 
     } catch (error) {
+
         console.error(
-            "Unable to load YouTube cookies:",
+            "Unable to create Railway cookie file:",
             error.message
         );
     }
-} else {
+}
+
+// Local Mac cookie file
+else if (fs.existsSync(localCookiesPath)) {
+
+    cookiesPath = localCookiesPath;
+
     console.log(
-        "YT_COOKIES_BASE64 not found ❌"
+        "Local YouTube cookies loaded ✅"
+    );
+}
+
+else {
+
+    console.log(
+        "YouTube cookies not available ❌"
     );
 }
 
@@ -76,7 +130,12 @@ if (process.env.YT_COOKIES_BASE64) {
 // ======================================================
 
 app.use(cors());
-app.use(express.json());
+
+app.use(
+    express.json({
+        limit: "2mb"
+    })
+);
 
 app.use(
     express.static(
@@ -85,38 +144,27 @@ app.use(
 );
 
 // ======================================================
-// FOLDERS
+// SERVE CONVERTED MP3
 // ======================================================
 
-
-
-if (!fs.existsSync(uploadsFolder)) {
-    fs.mkdirSync(
-        uploadsFolder,
-        {
-            recursive: true
-        }
-    );
-}
-
-// Serve converted files
 app.use(
     "/converted",
     express.static(convertedFolder)
 );
 
 // ======================================================
-// FILE SIZE LIMIT
+// UPLOAD LIMIT
 // ======================================================
 
 const MAX_FILE_SIZE =
     200 * 1024 * 1024;
 
 // ======================================================
-// MULTER SETUP
+// MULTER
 // ======================================================
 
 const upload = multer({
+
     dest: uploadsFolder,
 
     limits: {
@@ -124,11 +172,12 @@ const upload = multer({
     },
 
     fileFilter: (req, file, cb) => {
+
         if (
-            !file.mimetype.startsWith(
-                "video/"
-            )
+            !file.mimetype ||
+            !file.mimetype.startsWith("video/")
         ) {
+
             return cb(
                 new Error(
                     "Only video files are allowed"
@@ -141,11 +190,13 @@ const upload = multer({
 });
 
 // ======================================================
-// CHECK YOUTUBE URL
+// VALIDATE YOUTUBE URL
 // ======================================================
 
 function isValidYouTubeURL(videoUrl) {
+
     try {
+
         const parsedURL =
             new URL(videoUrl);
 
@@ -165,7 +216,8 @@ function isValidYouTubeURL(videoUrl) {
             hostname
         );
 
-    } catch (error) {
+    } catch {
+
         return false;
     }
 }
@@ -179,29 +231,33 @@ app.post(
     async (req, res) => {
 
         const videoUrl =
-            req.body.url;
+            req.body.url?.trim();
+
+        // ----------------------------------------------
+        // Check URL
+        // ----------------------------------------------
 
         if (!videoUrl) {
-            return res
-                .status(400)
-                .json({
-                    error:
-                        "YouTube URL is required"
-                });
+
+            return res.status(400).json({
+                error:
+                    "YouTube URL is required"
+            });
         }
 
         if (
-            !isValidYouTubeURL(
-                videoUrl
-            )
+            !isValidYouTubeURL(videoUrl)
         ) {
-            return res
-                .status(400)
-                .json({
-                    error:
-                        "Please enter a valid YouTube URL"
-                });
+
+            return res.status(400).json({
+                error:
+                    "Please enter a valid YouTube URL"
+            });
         }
+
+        // ----------------------------------------------
+        // Unique file
+        // ----------------------------------------------
 
         const id =
             crypto.randomUUID();
@@ -219,41 +275,87 @@ app.post(
             );
 
         try {
+
+            console.log(
+                "================================="
+            );
+
             console.log(
                 "Downloading YouTube video..."
             );
 
             console.log(
+                "URL:",
                 videoUrl
             );
 
+            // ------------------------------------------
+            // yt-dlp options
+            // ------------------------------------------
+
             const ytDlpOptions = {
+
                 extractAudio: true,
+
                 audioFormat: "mp3",
+
                 audioQuality: "192K",
+
                 output: outputTemplate,
+
                 noPlaylist: true,
-                ffmpegLocation: ffmpegPath,
+
+                ffmpegLocation:
+                    ffmpegPath,
+
                 noWarnings: true
             };
 
-           const os = require("os");
+            // ------------------------------------------
+            // Add cookies
+            // ------------------------------------------
 
-const cookiesPath = path.join(os.tmpdir(), "youtube-cookies.txt");
-const convertedFolder = path.join(os.tmpdir(), "converted");
-const uploadsFolder = path.join(os.tmpdir(), "uploads");
-           
+            if (
+                cookiesPath &&
+                fs.existsSync(cookiesPath)
+            ) {
+
+                ytDlpOptions.cookies =
+                    cookiesPath;
+
+                console.log(
+                    "Using YouTube cookies ✅"
+                );
+
+                console.log(
+                    "Cookie file:",
+                    cookiesPath
+                );
+
+            } else {
+
+                console.log(
+                    "YouTube cookies not available ❌"
+                );
+            }
+
+            // ------------------------------------------
+            // Run yt-dlp
+            // ------------------------------------------
 
             await ytdlp(
                 videoUrl,
                 ytDlpOptions
             );
 
+            // ------------------------------------------
+            // Verify MP3
+            // ------------------------------------------
+
             if (
-                !fs.existsSync(
-                    finalMP3
-                )
+                !fs.existsSync(finalMP3)
             ) {
+
                 throw new Error(
                     "MP3 file was not created"
                 );
@@ -263,13 +365,20 @@ const uploadsFolder = path.join(os.tmpdir(), "uploads");
                 "YouTube → MP3 complete ✅"
             );
 
+            console.log(
+                "================================="
+            );
+
             return res.json({
+
                 success: true,
+
                 audioUrl:
                     `/converted/${id}.mp3`
             });
 
         } catch (error) {
+
             console.error(
                 "yt-dlp error:"
             );
@@ -279,21 +388,27 @@ const uploadsFolder = path.join(os.tmpdir(), "uploads");
             );
 
             if (
-                fs.existsSync(
-                    finalMP3
-                )
+                fs.existsSync(finalMP3)
             ) {
+
                 fs.unlinkSync(
                     finalMP3
                 );
             }
 
-            return res
-                .status(500)
-                .json({
-                    error:
-                        "Unable to download or convert this YouTube video"
-                });
+            return res.status(500).json({
+
+                success: false,
+
+                error:
+                    "Unable to download or convert this YouTube video",
+
+                details:
+                    process.env.NODE_ENV ===
+                    "development"
+                        ? error.message
+                        : undefined
+            });
         }
     }
 );
@@ -305,16 +420,25 @@ const uploadsFolder = path.join(os.tmpdir(), "uploads");
 app.post(
     "/upload-convert",
 
+    // ----------------------------------------------
+    // Upload
+    // ----------------------------------------------
+
     (req, res, next) => {
+
         upload.single("video")(
             req,
             res,
             (error) => {
 
                 if (error) {
+
                     return res
                         .status(400)
                         .json({
+
+                            success: false,
+
                             error:
                                 error.message
                         });
@@ -325,12 +449,20 @@ app.post(
         );
     },
 
+    // ----------------------------------------------
+    // Convert
+    // ----------------------------------------------
+
     (req, res) => {
 
         if (!req.file) {
+
             return res
                 .status(400)
                 .json({
+
+                    success: false,
+
                     error:
                         "Please select a video"
                 });
@@ -372,6 +504,10 @@ app.post(
                 "mp3"
             )
 
+            // ------------------------------------------
+            // Success
+            // ------------------------------------------
+
             .on(
                 "end",
                 () => {
@@ -385,18 +521,25 @@ app.post(
                             inputPath
                         )
                     ) {
+
                         fs.unlinkSync(
                             inputPath
                         );
                     }
 
                     return res.json({
+
                         success: true,
+
                         audioUrl:
                             `/converted/${id}.mp3`
                     });
                 }
             )
+
+            // ------------------------------------------
+            // Error
+            // ------------------------------------------
 
             .on(
                 "error",
@@ -412,6 +555,7 @@ app.post(
                             inputPath
                         )
                     ) {
+
                         fs.unlinkSync(
                             inputPath
                         );
@@ -420,9 +564,13 @@ app.post(
                     if (
                         !res.headersSent
                     ) {
+
                         return res
                             .status(500)
                             .json({
+
+                                success: false,
+
                                 error:
                                     "Unable to convert uploaded video"
                             });
@@ -437,7 +585,7 @@ app.post(
 );
 
 // ======================================================
-// API STATUS
+// STATUS
 // ======================================================
 
 app.get(
@@ -445,10 +593,14 @@ app.get(
     (req, res) => {
 
         res.json({
+
             success: true,
 
             message:
                 "Audio converter server is running",
+
+            port:
+                PORT,
 
             cookieVariablePresent:
                 Boolean(
@@ -457,10 +609,37 @@ app.get(
                 ),
 
             cookieFileExists:
-                fs.existsSync(
-                    cookiesPath
-                )
+                Boolean(
+                    cookiesPath &&
+                    fs.existsSync(
+                        cookiesPath
+                    )
+                ),
+
+            convertedFolder:
+                convertedFolder,
+
+            uploadsFolder:
+                uploadsFolder
         });
+    }
+);
+
+// ======================================================
+// HOME FALLBACK
+// ======================================================
+
+app.get(
+    "/",
+    (req, res) => {
+
+        res.sendFile(
+            path.join(
+                __dirname,
+                "public",
+                "index.html"
+            )
+        );
     }
 );
 
@@ -470,6 +649,7 @@ app.get(
 
 app.listen(
     PORT,
+    "0.0.0.0",
     () => {
 
         console.log(
@@ -482,12 +662,19 @@ app.listen(
 
         console.log(
             `YouTube cookies: ${
-                fs.existsSync(
-                    cookiesPath
-                )
+                cookiesPath &&
+                fs.existsSync(cookiesPath)
                     ? "LOADED ✅"
                     : "NOT LOADED ❌"
             }`
+        );
+
+        console.log(
+            `Converted folder: ${convertedFolder}`
+        );
+
+        console.log(
+            `Uploads folder: ${uploadsFolder}`
         );
 
         console.log(
