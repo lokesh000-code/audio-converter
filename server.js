@@ -88,24 +88,7 @@ app.use(
 // FOLDERS
 // ======================================================
 
-const convertedFolder = path.join(
-    __dirname,
-    "converted"
-);
 
-const uploadsFolder = path.join(
-    __dirname,
-    "uploads"
-);
-
-if (!fs.existsSync(convertedFolder)) {
-    fs.mkdirSync(
-        convertedFolder,
-        {
-            recursive: true
-        }
-    );
-}
 
 if (!fs.existsSync(uploadsFolder)) {
     fs.mkdirSync(
@@ -254,28 +237,12 @@ app.post(
                 noWarnings: true
             };
 
-            if (
-                fs.existsSync(
-                    cookiesPath
-                )
-            ) {
-                ytDlpOptions.cookies =
-                    cookiesPath;
+           const os = require("os");
 
-                console.log(
-                    "Using YouTube cookies ✅"
-                );
-
-                console.log(
-                    "Cookie path:",
-                    cookiesPath
-                );
-
-            } else {
-                console.log(
-                    "YouTube cookies not available ❌"
-                );
-            }
+const cookiesPath = path.join(os.tmpdir(), "youtube-cookies.txt");
+const convertedFolder = path.join(os.tmpdir(), "converted");
+const uploadsFolder = path.join(os.tmpdir(), "uploads");
+           
 
             await ytdlp(
                 videoUrl,

@@ -1,6 +1,8 @@
 node_modules
-converted
-uploads
-.git
-.DS_Store
 npm-debug.log
+.git
+.gitignore
+.DS_Store
+.env
+*.mp3
+*.mp4
