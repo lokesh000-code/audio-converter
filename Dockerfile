@@ -3,9 +3,10 @@ FROM node:22-bookworm-slim
 # Required utilities
 RUN apt-get update && \
     apt-get install -y \
-        python3 \
-        curl \
-        ca-certificates \
+    python3 \
+    python-is-python3 \
+    curl \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Install yt-dlp
