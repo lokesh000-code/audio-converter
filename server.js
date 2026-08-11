@@ -45,7 +45,6 @@ if (!fs.existsSync(uploadsFolder)) {
         recursive: true
     });
 }
-
 // ======================================================
 // YOUTUBE COOKIES
 // ======================================================
@@ -62,33 +61,76 @@ const localCookiesPath = path.join(
 
 let cookiesPath = null;
 
-console.log(
-    "YT_COOKIES_BASE64 present:",
-    Boolean(process.env.YT_COOKIES_BASE64)
-);
+function getRailwayCookieBase64() {
+
+    const prefix = "YT_COOKIES_BASE64_";
+
+    const keys = Object.keys(process.env)
+        .filter(key => key.startsWith(prefix))
+        .sort((a, b) => {
+
+            const aNumber =
+                Number(a.slice(prefix.length));
+
+            const bNumber =
+                Number(b.slice(prefix.length));
+
+            return aNumber - bNumber;
+        });
+
+    console.log(
+        "Railway cookie chunks:",
+        keys.length
+    );
+
+    if (keys.length === 0) {
+        return "";
+    }
+
+    return keys
+        .map(
+            key =>
+                (process.env[key] || "").trim()
+        )
+        .join("");
+}
+
+const railwayBase64 =
+    getRailwayCookieBase64();
 
 console.log(
-    "YT_COOKIES_BASE64 length:",
-    process.env.YT_COOKIES_BASE64
-        ? process.env.YT_COOKIES_BASE64.length
-        : 0
+    "Combined Base64 length:",
+    railwayBase64.length
 );
 
-// Railway cookies
-if (process.env.YT_COOKIES_BASE64) {
+if (railwayBase64) {
+
     try {
 
-        const cookiesData = Buffer.from(
-            process.env.YT_COOKIES_BASE64,
-            "base64"
-        );
+        const cookiesData =
+            Buffer.from(
+                railwayBase64,
+                "base64"
+            );
 
         fs.writeFileSync(
             railwayCookiesPath,
             cookiesData
         );
 
-        cookiesPath = railwayCookiesPath;
+        if (
+            fs.statSync(
+                railwayCookiesPath
+            ).size === 0
+        ) {
+
+            throw new Error(
+                "Decoded cookies file is empty"
+            );
+        }
+
+        cookiesPath =
+            railwayCookiesPath;
 
         console.log(
             "Railway YouTube cookies loaded ✅"
@@ -102,23 +144,27 @@ if (process.env.YT_COOKIES_BASE64) {
     } catch (error) {
 
         console.error(
-            "Unable to create Railway cookie file:",
+            "Unable to create Railway cookies:",
             error.message
         );
     }
 }
 
-// Local Mac cookie file
-else if (fs.existsSync(localCookiesPath)) {
+// Local Mac fallback
+if (
+    !cookiesPath &&
+    fs.existsSync(localCookiesPath)
+) {
 
-    cookiesPath = localCookiesPath;
+    cookiesPath =
+        localCookiesPath;
 
     console.log(
         "Local YouTube cookies loaded ✅"
     );
 }
 
-else {
+if (!cookiesPath) {
 
     console.log(
         "YouTube cookies not available ❌"
