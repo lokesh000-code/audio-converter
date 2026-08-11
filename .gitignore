@@ -6,4 +6,6 @@ uploads/
 cookies.txt
 youtube-cookies.txt
 cookies.txt
-cookies-base64.txt
+cookies-base64.txtcookie-part-*
+railway-cookies.env
+youtube-cookies.txt
