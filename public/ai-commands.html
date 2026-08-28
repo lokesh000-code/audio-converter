@@ -1,0 +1,624 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Command Library</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#f4f8ff;
+    color:#172033;
+}
+
+/* HEADER */
+
+header{
+    background:#ffffff;
+    border-bottom:1px solid #e3eaf5;
+    padding:20px 6%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo{
+    font-size:22px;
+    font-weight:800;
+    color:#1264e8;
+}
+
+.logo span{
+    color:#172033;
+}
+
+.nav{
+    display:flex;
+    gap:22px;
+}
+
+.nav a{
+    text-decoration:none;
+    color:#526078;
+    font-size:14px;
+}
+
+.nav a:hover{
+    color:#1264e8;
+}
+
+
+/* HERO */
+
+.hero{
+    text-align:center;
+    padding:70px 20px 45px;
+}
+
+.hero h1{
+    font-size:48px;
+    line-height:1.1;
+    color:#101828;
+    margin-bottom:15px;
+}
+
+.hero h1 span{
+    color:#1264e8;
+}
+
+.hero p{
+    color:#667085;
+    font-size:17px;
+    max-width:650px;
+    margin:auto;
+}
+
+
+/* SEARCH */
+
+.search-container{
+    max-width:750px;
+    margin:30px auto 15px;
+    position:relative;
+}
+
+.search{
+    width:100%;
+    padding:18px 22px;
+    border:1px solid #d7e1f0;
+    border-radius:14px;
+    background:#ffffff;
+    font-size:16px;
+    outline:none;
+    box-shadow:0 5px 20px rgba(18,100,232,0.06);
+}
+
+.search:focus{
+    border-color:#1264e8;
+    box-shadow:0 5px 25px rgba(18,100,232,0.12);
+}
+
+.counter{
+    text-align:center;
+    color:#7b8799;
+    font-size:13px;
+    margin-bottom:45px;
+}
+
+
+/* MAIN */
+
+.container{
+    max-width:1150px;
+    margin:auto;
+    padding:0 20px 60px;
+}
+
+
+/* CATEGORY */
+
+.category{
+    margin-bottom:45px;
+}
+
+.category-title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:18px;
+}
+
+.category-title h2{
+    font-size:22px;
+    color:#182230;
+}
+
+.category-line{
+    height:3px;
+    width:45px;
+    background:#1264e8;
+    border-radius:5px;
+}
+
+
+/* COMMAND GRID */
+
+.commands{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+}
+
+
+/* COMMAND CARD */
+
+.command{
+    background:#ffffff;
+    border:1px solid #e2e8f2;
+    border-radius:14px;
+    padding:18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    transition:0.2s ease;
+    box-shadow:0 3px 12px rgba(16,24,40,0.03);
+}
+
+.command:hover{
+    transform:translateY(-3px);
+    border-color:#b9d3ff;
+    box-shadow:0 8px 25px rgba(18,100,232,0.10);
+}
+
+.command-name{
+    font-size:14px;
+    font-weight:700;
+    color:#1d2939;
+}
+
+
+/* COPY BUTTON */
+
+.copy-btn{
+    border:none;
+    background:#1264e8;
+    color:#ffffff;
+    padding:8px 12px;
+    border-radius:8px;
+    font-size:11px;
+    font-weight:700;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.copy-btn:hover{
+    background:#0955ca;
+}
+
+.copy-btn.copied{
+    background:#16a34a;
+}
+
+
+/* EXAMPLE */
+
+.example{
+    background:#ffffff;
+    border:1px solid #dce6f4;
+    border-radius:16px;
+    padding:25px;
+    margin-top:20px;
+    box-shadow:0 5px 20px rgba(16,24,40,0.04);
+}
+
+.example h2{
+    margin-bottom:15px;
+    font-size:20px;
+}
+
+.example code{
+    display:block;
+    background:#f0f6ff;
+    color:#1264e8;
+    border:1px solid #d9e7ff;
+    padding:14px;
+    border-radius:9px;
+    margin-top:10px;
+    font-weight:600;
+    overflow:auto;
+}
+
+
+/* FOOTER */
+
+footer{
+    background:#ffffff;
+    border-top:1px solid #e3eaf5;
+    text-align:center;
+    padding:25px;
+    color:#7b8799;
+    font-size:13px;
+}
+
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+    header{
+        padding:18px 20px;
+    }
+
+    .nav{
+        display:none;
+    }
+
+    .hero{
+        padding:50px 20px 35px;
+    }
+
+    .hero h1{
+        font-size:36px;
+    }
+
+    .hero p{
+        font-size:15px;
+    }
+
+    .commands{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- HEADER -->
+
+<header>
+
+    <div class="logo">
+        AI<span>Commands</span>
+    </div>
+
+    <nav class="nav">
+        <a href="#">Home</a>
+        <a href="#commands">Commands</a>
+        <a href="#examples">Examples</a>
+    </nav>
+
+</header>
+
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+    <h1>
+        AI <span>Command</span> Library
+    </h1>
+
+    <p>
+        50 useful slash-style commands for image generation,
+        design, photography, vehicles and creative projects.
+    </p>
+
+
+    <!-- SEARCH -->
+
+    <div class="search-container">
+
+        <input
+            type="text"
+            id="search"
+            class="search"
+            placeholder="Search commands... e.g. BMW, sketch, cinematic"
+        >
+
+    </div>
+
+    <div class="counter" id="counter">
+        Showing 50 commands
+    </div>
+
+</section>
+
+
+
+<!-- COMMANDS -->
+
+<main class="container" id="commands">
+
+
+<!-- STYLE -->
+
+<section class="category">
+
+    <div class="category-title">
+        <div class="category-line"></div>
+        <h2>🎨 Style & Drawing</h2>
+    </div>
+
+    <div class="commands">
+
+        <div class="command"><span class="command-name">/HANDWRITTEN</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/SKETCH</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/PENCILSKETCH</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/INKDRAWING</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/LINEART</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/CARTOON</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/ANIME</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/REALISTIC</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/HYPERREALISTIC</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/WATERCOLOR</span><button class="copy-btn">COPY</button></div>
+
+    </div>
+
+</section>
+
+
+
+<!-- VEHICLES -->
+
+<section class="category">
+
+    <div class="category-title">
+        <div class="category-line"></div>
+        <h2>🚗 Vehicle & Product</h2>
+    </div>
+
+    <div class="commands">
+
+        <div class="command"><span class="command-name">/BMW</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/CAR</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/BIKE</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/SUPERCAR</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/SPORTSBIKE</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/LUXURYCAR</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/CONCEPTCAR</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/CARINTERIOR</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/ENGINE</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/MECHANICAL</span><button class="copy-btn">COPY</button></div>
+
+    </div>
+
+</section>
+
+
+
+<!-- TECHNICAL -->
+
+<section class="category">
+
+    <div class="category-title">
+        <div class="category-line"></div>
+        <h2>🔧 Technical / 3D</h2>
+    </div>
+
+    <div class="commands">
+
+        <div class="command"><span class="command-name">/EXPLODEVIEW</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/3DVIEW</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/CUTAWAY</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/WIREFRAME</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/BLUEPRINT</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/TECHNICALDRAWING</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/CROSSSECTION</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/ASSEMBLY</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/DISASSEMBLY</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/ENGINEERINGDIAGRAM</span><button class="copy-btn">COPY</button></div>
+
+    </div>
+
+</section>
+
+
+
+<!-- PHOTO -->
+
+<section class="category">
+
+    <div class="category-title">
+        <div class="category-line"></div>
+        <h2>📸 Photo & Camera</h2>
+    </div>
+
+    <div class="commands">
+
+        <div class="command"><span class="command-name">/PORTRAIT</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/CINEMATIC</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/STUDIO</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/PRODUCTSHOT</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/MACRO</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/WIDEANGLE</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/DRAMATICLIGHTING</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/NIGHTSHOT</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/GOLDENHOUR</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/AERIALVIEW</span><button class="copy-btn">COPY</button></div>
+
+    </div>
+
+</section>
+
+
+
+<!-- CREATIVE -->
+
+<section class="category">
+
+    <div class="category-title">
+        <div class="category-line"></div>
+        <h2>✨ Creative / Social Media</h2>
+    </div>
+
+    <div class="commands">
+
+        <div class="command"><span class="command-name">/POSTER</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/THUMBNAIL</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/LOGO</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/ADVERTISEMENT</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/MINIMAL</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/NEON</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/CYBERPUNK</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/FUTURISTIC</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/VINTAGE</span><button class="copy-btn">COPY</button></div>
+        <div class="command"><span class="command-name">/LUXURY</span><button class="copy-btn">COPY</button></div>
+
+    </div>
+
+</section>
+
+
+
+<!-- EXAMPLE -->
+
+<section class="example" id="examples">
+
+    <h2>💡 How to use</h2>
+
+    <code>/EXPLODEVIEW BMW SPORTSBIKE</code>
+
+    <code>/HANDWRITTEN WOMEN EMPOWERMENT</code>
+
+    <code>/CINEMATIC BMW M4 NIGHT</code>
+
+</section>
+
+
+</main>
+
+
+
+<footer>
+
+    AI Command Library • 50 Commands
+
+</footer>
+
+
+
+<script>
+
+/* COPY */
+
+document.querySelectorAll(".copy-btn").forEach(button => {
+
+    button.addEventListener("click", async () => {
+
+        const command =
+            button.parentElement
+            .querySelector(".command-name")
+            .textContent;
+
+        try{
+
+            await navigator.clipboard.writeText(command);
+
+            button.textContent = "COPIED";
+            button.classList.add("copied");
+
+            setTimeout(() => {
+
+                button.textContent = "COPY";
+                button.classList.remove("copied");
+
+            },1200);
+
+        }catch(error){
+
+            alert("Unable to copy command.");
+
+        }
+
+    });
+
+});
+
+
+/* SEARCH */
+
+const search =
+    document.getElementById("search");
+
+const counter =
+    document.getElementById("counter");
+
+
+search.addEventListener("input", () => {
+
+    const query =
+        search.value.toLowerCase().trim();
+
+    let visible = 0;
+
+
+    document
+    .querySelectorAll(".category")
+    .forEach(category => {
+
+        let categoryVisible = 0;
+
+
+        category
+        .querySelectorAll(".command")
+        .forEach(command => {
+
+            const text =
+                command
+                .querySelector(".command-name")
+                .textContent
+                .toLowerCase();
+
+
+            if(text.includes(query)){
+
+                command.style.display = "flex";
+
+                categoryVisible++;
+                visible++;
+
+            }else{
+
+                command.style.display = "none";
+
+            }
+
+        });
+
+
+        category.style.display =
+            categoryVisible > 0
+            ? "block"
+            : "none";
+
+    });
+
+
+    counter.textContent =
+        `Showing ${visible} command${visible !== 1 ? "s" : ""}`;
+
+});
+
+</script>
+
+
+</body>
+</html>
+
