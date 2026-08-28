@@ -1,0 +1,316 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>YouTube Video to MP3 Converter</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f4f5f7;
+            font-family: Arial, sans-serif;
+        }
+
+        .converter {
+            width: 500px;
+            max-width: 90%;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.10);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            text-align: center;
+            color: #777;
+            margin-bottom: 30px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .or {
+            text-align: center;
+            margin: 20px 0;
+            color: #999;
+            font-weight: bold;
+        }
+
+        .upload-box {
+            border: 2px dashed #ccc;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .upload-box input {
+            border: none;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 15px;
+            border: none;
+            border-radius: 9px;
+            background: #635bff;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #status {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .download {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: #20a060;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .note {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        .error {
+            color: #d93025;
+        }
+
+        .success {
+            color: #20a060;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="converter">
+
+    <h1>🎵 YouTube to MP3</h1>
+
+    <p class="description">
+        Paste a YouTube video link or upload a video from your device.
+    </p>
+
+    <!-- YOUTUBE URL -->
+
+    <input
+        type="url"
+        id="videoURL"
+        placeholder="Paste YouTube video URL"
+    >
+
+    <p class="note">
+        Example: https://www.youtube.com/watch?v=...
+    </p>
+
+    <div class="or">
+        OR
+    </div>
+
+    <!-- FILE UPLOAD -->
+
+    <div class="upload-box">
+
+        <p>📁 Choose video from your device</p>
+
+        <input
+            type="file"
+            id="videoFile"
+            accept="video/*"
+        >
+
+    </div>
+
+    <button
+        id="convertButton"
+        onclick="convertVideo()"
+    >
+        Convert to MP3
+    </button>
+
+    <div id="status"></div>
+
+</div>
+
+
+<script>
+
+async function convertVideo() {
+
+    const videoURL =
+        document.getElementById("videoURL").value.trim();
+
+    const videoFile =
+        document.getElementById("videoFile").files[0];
+
+    const status =
+        document.getElementById("status");
+
+    const button =
+        document.getElementById("convertButton");
+
+
+    if (!videoURL && !videoFile) {
+
+        status.innerHTML =
+            '<p class="error">Please paste a YouTube URL or select a video.</p>';
+
+        return;
+    }
+
+
+    button.disabled = true;
+    button.innerText = "Converting...";
+
+    status.innerHTML =
+        "<p>⏳ Processing your video...</p>";
+
+
+    try {
+
+        let response;
+
+
+        // =============================================
+        // YOUTUBE LINK
+        // =============================================
+
+        if (videoURL) {
+
+            response = await fetch("/convert", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    url: videoURL
+                })
+
+            });
+
+        }
+
+
+        // =============================================
+        // UPLOADED VIDEO
+        // =============================================
+
+        else if (videoFile) {
+
+            const formData =
+                new FormData();
+
+            formData.append(
+                "video",
+                videoFile
+            );
+
+            response = await fetch(
+                "/upload-convert",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Conversion failed"
+            );
+
+        }
+
+
+        status.innerHTML = `
+            <p class="success">
+                ✅ Conversion complete!
+            </p>
+
+            <a
+                class="download"
+                href="${data.audioUrl}"
+                download
+            >
+                Download MP3
+            </a>
+        `;
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        status.innerHTML = `
+            <p class="error">
+                ❌ ${error.message}
+            </p>
+        `;
+
+    } finally {
+
+        button.disabled = false;
+
+        button.innerText =
+            "Convert to MP3";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
+

@@ -1,316 +1,116 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>YouTube Video to MP3 Converter</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #f4f5f7;
-            font-family: Arial, sans-serif;
-        }
-
-        .converter {
-            width: 500px;
-            max-width: 90%;
-            background: white;
-            padding: 35px;
-            border-radius: 18px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.10);
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .description {
-            text-align: center;
-            color: #777;
-            margin-bottom: 30px;
-        }
-
-        input {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 15px;
-        }
-
-        .or {
-            text-align: center;
-            margin: 20px 0;
-            color: #999;
-            font-weight: bold;
-        }
-
-        .upload-box {
-            border: 2px dashed #ccc;
-            padding: 25px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .upload-box input {
-            border: none;
-        }
-
-        button {
-            width: 100%;
-            margin-top: 25px;
-            padding: 15px;
-            border: none;
-            border-radius: 9px;
-            background: #635bff;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        #status {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .download {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 12px 25px;
-            background: #20a060;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-        }
-
-        .note {
-            font-size: 12px;
-            color: #888;
-            margin-top: 10px;
-        }
-
-        .error {
-            color: #d93025;
-        }
-
-        .success {
-            color: #20a060;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="DupeshX — Dupesh's corner of the internet for robots, AI, gaming, art and videos.">
+<title>DupeshX</title>
+<style>
+:root{--bg:#0b0d12;--panel:#12151c;--ink:#f4f4f2;--muted:#9da3b1;--blue:#72a7ff;--lime:#b9ff66;--line:#272c36}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+a{color:inherit;text-decoration:none}.shell{width:min(1080px,91%);margin:auto}
+nav{position:sticky;top:0;z-index:9;background:rgba(11,13,18,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{font-weight:900;font-size:1.35rem;letter-spacing:-1px}.brand b{color:var(--blue)}
+.navlinks{display:flex;gap:22px;color:var(--muted);font-size:.9rem}.navlinks a:hover{color:white}.hamburger{display:none;width:42px;height:42px;border:1px solid var(--line);border-radius:9px;background:#151922;color:white;cursor:pointer;align-items:center;justify-content:center;flex-direction:column;gap:5px}.hamburger span{display:block;width:19px;height:2px;background:white;transition:.25s}.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.hamburger.open span:nth-child(2){opacity:0}.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.hero{padding:90px 0 60px;min-height:78vh;display:flex;align-items:center}
+.hero-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:50px;align-items:center}
+.note{font-family:"Comic Sans MS",cursive;color:var(--lime);transform:rotate(-3deg);display:inline-block;margin-bottom:12px}
+h1{font-size:clamp(3.6rem,9vw,7.3rem);line-height:.88;letter-spacing:-6px;margin:0 0 24px}
+h1 span{color:var(--blue)}.lead{font-size:clamp(1.1rem,2.3vw,1.45rem);line-height:1.55;max-width:650px}
+.muted{color:var(--muted)}.buttons{display:flex;gap:11px;flex-wrap:wrap;margin-top:28px}
+.btn{padding:12px 17px;border:1px solid var(--line);border-radius:9px;font-weight:700;background:#151922}
+.btn.main{background:var(--ink);color:#101116}.btn:hover{transform:translateY(-2px)}
+.profile{aspect-ratio:4/5;border:1px solid var(--line);background:#151922;border-radius:8px;position:relative;display:grid;place-items:center;overflow:hidden;transform:rotate(2deg);box-shadow:12px 12px 0 #08090c}
+.profile .dx{font-size:5rem;font-weight:900}.profile .dx b{color:var(--blue)}
+.tape{position:absolute;top:12px;left:50%;transform:translateX(-50%) rotate(-4deg);width:95px;height:25px;background:rgba(185,255,102,.65)}
+section{padding:75px 0}.label{font-size:.78rem;color:var(--blue);font-weight:800;letter-spacing:2px;text-transform:uppercase}
+h2{font-size:clamp(2rem,5vw,3.4rem);letter-spacing:-2px;margin:8px 0 18px}
+.copy{max-width:720px;color:var(--muted);line-height:1.8}
+.now{margin-top:35px;background:var(--panel);border:1px solid var(--line);padding:24px;border-radius:12px;display:grid;grid-template-columns:auto 1fr;gap:18px}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--lime);margin-top:6px;box-shadow:0 0 12px var(--lime)}
+.now small{color:var(--lime);font-weight:bold}.now p{margin:7px 0 0;color:var(--muted)}
+.world{display:grid;grid-template-columns:1.2fr .8fr 1fr;grid-template-rows:auto auto;gap:13px;margin-top:35px}
+.tile{border:1px solid var(--line);background:var(--panel);padding:24px;min-height:190px;border-radius:9px;position:relative;overflow:hidden}
+.tile:nth-child(1){grid-row:span 2;min-height:393px}.tile:nth-child(4){grid-column:span 2}
+.tile .big{font-size:3rem;margin-bottom:35px}.tile h3{font-size:1.3rem;margin:0 0 9px}.tile p{color:var(--muted);line-height:1.55;margin:0}
+.tile.robot:after{content:"01";position:absolute;right:12px;top:4px;font-size:6rem;font-weight:900;color:rgba(114,167,255,.06)}
+.tile.art{background:#e9e4d7;color:#161616;transform:rotate(-1deg)}.tile.art p{color:#555}.tile.art .scribble{font-family:"Comic Sans MS",cursive;color:#8a3e3e}
+.tile.game{background:linear-gradient(135deg,#151922,#18142a)}
+.project-list{margin-top:35px;border-top:1px solid var(--line)}
+.project-row{display:grid;grid-template-columns:80px 1fr auto;gap:20px;align-items:center;padding:25px 5px;border-bottom:1px solid var(--line)}
+.num{color:#565e70;font-family:monospace}.project-row h3{margin:0 0 6px}.project-row p{margin:0;color:var(--muted)}.status{font-size:.75rem;border:1px solid var(--line);padding:7px 9px;border-radius:999px}
+.youtube{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:32px}
+.video{aspect-ratio:16/9;background:#171a21;border:1px solid var(--line);display:grid;place-items:center;border-radius:9px;position:relative}
+.play{font-size:2.8rem}.video:after{content:"put latest video thumbnail here";position:absolute;bottom:10px;left:12px;color:#72798a;font-size:.75rem}
+.ytcopy{align-self:center}.ytcopy p{color:var(--muted);line-height:1.7}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:30px}
+.paper{height:220px;background:#ddd8cb;color:#222;padding:16px;box-shadow:5px 5px 0 #06070a;transform:rotate(-1.5deg);display:flex;align-items:flex-end;font-family:"Comic Sans MS",cursive}
+.paper:nth-child(2){transform:rotate(1deg)}.paper:nth-child(3){transform:rotate(-.4deg)}
+footer{margin-top:50px;border-top:1px solid var(--line);padding:40px 0 55px;color:var(--muted)}
+.foot{display:flex;justify-content:space-between;gap:20px}.foot strong{color:white}
+@media(max-width:760px){.hamburger{display:flex}.navlinks{display:none;position:absolute;top:66px;left:0;right:0;background:rgba(11,13,18,.98);border-bottom:1px solid var(--line);padding:18px 4.5%;flex-direction:column;gap:0}.navlinks.open{display:flex}.navlinks a{padding:14px 0;border-bottom:1px solid var(--line)}.navlinks a:last-child{border-bottom:0}.hero-grid{grid-template-columns:1fr}.profile{max-width:300px;margin:auto;width:80%}.world{grid-template-columns:1fr}.tile:nth-child(1){grid-row:auto;min-height:220px}.tile:nth-child(4){grid-column:auto}.youtube{grid-template-columns:1fr}.gallery{grid-template-columns:1fr}.project-row{grid-template-columns:45px 1fr}.status{grid-column:2}.foot{flex-direction:column}h1{letter-spacing:-3px}}
+</style>
 </head>
-
 <body>
+<nav><div class="shell nav"><a href="#" class="brand">dupesh<b>x</b>.</a><div class="navlinks" id="navLinks"><a href="#about">about</a><a href="#stuff">stuff i like</a><a href="#projects">projects</a><a href="#videos">videos</a><a href="#art">art</a></div><button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button></div></nav>
 
-<div class="converter">
-
-    <h1>🎵 YouTube to MP3</h1>
-
-    <p class="description">
-        Paste a YouTube video link or upload a video from your device.
-    </p>
-
-    <!-- YOUTUBE URL -->
-
-    <input
-        type="url"
-        id="videoURL"
-        placeholder="Paste YouTube video URL"
-    >
-
-    <p class="note">
-        Example: https://www.youtube.com/watch?v=...
-    </p>
-
-    <div class="or">
-        OR
-    </div>
-
-    <!-- FILE UPLOAD -->
-
-    <div class="upload-box">
-
-        <p>📁 Choose video from your device</p>
-
-        <input
-            type="file"
-            id="videoFile"
-            accept="video/*"
-        >
-
-    </div>
-
-    <button
-        id="convertButton"
-        onclick="convertVideo()"
-    >
-        Convert to MP3
-    </button>
-
-    <div id="status"></div>
-
+<header class="hero"><div class="shell hero-grid">
+<div>
+<div class="note">hey, this is my little corner of the internet :)</div>
+<h1>Hi, I'm<br>Dupesh<span>.</span></h1>
+<div class="lead">I like <b>robots, AI, games and art.</b><br><span class="muted">Most of the time I'm learning something, making something, or figuring out why something I made isn't working.</span></div>
+<div class="buttons"><a class="btn main" href="#projects">see what I'm making</a><a class="btn" href="#videos">watch videos →</a></div>
 </div>
+<div class="profile"><div class="tape"></div><div class="dx">D<b>X</b></div><!-- Replace DX with Dupesh's photo later --></div>
+</div></header>
 
+<section id="about"><div class="shell">
+<div class="label">a bit about me</div><h2>I'm 14. I like making stuff.</h2>
+<p class="copy">I'm Dupesh. Tech is one of my favourite things, especially AI and robotics, but I don't spend all my time coding. I draw, play games, watch tech stuff and try random ideas just to see if they work. This website is where I'm keeping all of that together.</p>
+<div class="now"><div class="dot"></div><div><small>WHAT I'M DOING RIGHT NOW</small><p>Learning, trying new AI tools and thinking about the next thing to build. I'll update this whenever I'm working on something interesting.</p></div></div>
+</div></section>
 
-<script>
+<section id="stuff"><div class="shell">
+<div class="label">stuff i like</div><h2>Not everything has to fit in one box.</h2>
+<div class="world">
+<div class="tile robot"><div class="big">🤖</div><h3>Robots</h3><p>I want to understand how electronics, sensors, motors and code can work together to make something move for real.</p></div>
+<div class="tile game"><div class="big">🎮</div><h3>Gaming</h3><p>Games, challenges and all the random fun in between.</p></div>
+<div class="tile art"><div class="big">✏️</div><h3>Art</h3><p class="scribble">paper + pencil + whatever comes to mind.</p></div>
+<div class="tile"><div class="big">🧠</div><h3>AI + Tech</h3><p>Trying AI tools, learning what they can do, messing with new technology and finding ideas worth turning into projects.</p></div>
+</div>
+</div></section>
 
-async function convertVideo() {
+<section id="projects"><div class="shell">
+<div class="label">the workbench</div><h2>Stuff I'm making.</h2>
+<p class="copy">Some projects will be good. Some will probably break. Both are going here.</p>
+<a href="audio-converter.html" class="project-row">
+  <div class="num">01</div>
+  <div>
+    <h3>Audio Converter 🎵</h3>
+    <p>A small tool for converting video into audio. Open it and try it here.</p>
+  </div>
+  <div class="status">open project →</div>
+</a>
+</div></section>
 
-    const videoURL =
-        document.getElementById("videoURL").value.trim();
+<section id="videos"><div class="shell">
+<div class="label">youtube</div><h2>I also make videos.</h2>
+<div class="youtube">
+<div class="video"><div class="play">▶</div></div>
+<div class="ytcopy"><h3>DupeshX</h3><p>Robots, AI, gaming, tech, unboxings and whatever else I'm interested in that week.</p><p>No fake expert stuff. I'm learning while I make it.</p><!-- Replace # with the actual channel URL --><a class="btn main" href="#" target="_blank" rel="noopener">go to my channel →</a></div>
+</div>
+</div></section>
 
-    const videoFile =
-        document.getElementById("videoFile").files[0];
+<section id="art"><div class="shell">
+<div class="label">sketchbook</div><h2>Some art too.</h2>
+<p class="copy">I'll put drawings here instead of hiding them in a folder forever.</p>
+<div class="gallery"><div class="paper">drawing #01 — add photo</div><div class="paper">drawing #02 — add photo</div><div class="paper">something random — add photo</div></div>
+</div></section>
 
-    const status =
-        document.getElementById("status");
-
-    const button =
-        document.getElementById("convertButton");
-
-
-    if (!videoURL && !videoFile) {
-
-        status.innerHTML =
-            '<p class="error">Please paste a YouTube URL or select a video.</p>';
-
-        return;
-    }
-
-
-    button.disabled = true;
-    button.innerText = "Converting...";
-
-    status.innerHTML =
-        "<p>⏳ Processing your video...</p>";
-
-
-    try {
-
-        let response;
-
-
-        // =============================================
-        // YOUTUBE LINK
-        // =============================================
-
-        if (videoURL) {
-
-            response = await fetch("/convert", {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-                    url: videoURL
-                })
-
-            });
-
-        }
-
-
-        // =============================================
-        // UPLOADED VIDEO
-        // =============================================
-
-        else if (videoFile) {
-
-            const formData =
-                new FormData();
-
-            formData.append(
-                "video",
-                videoFile
-            );
-
-            response = await fetch(
-                "/upload-convert",
-                {
-                    method: "POST",
-                    body: formData
-                }
-            );
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                data.error ||
-                "Conversion failed"
-            );
-
-        }
-
-
-        status.innerHTML = `
-            <p class="success">
-                ✅ Conversion complete!
-            </p>
-
-            <a
-                class="download"
-                href="${data.audioUrl}"
-                download
-            >
-                Download MP3
-            </a>
-        `;
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        status.innerHTML = `
-            <p class="error">
-                ❌ ${error.message}
-            </p>
-        `;
-
-    } finally {
-
-        button.disabled = false;
-
-        button.innerText =
-            "Convert to MP3";
-
-    }
-
-}
-
-</script>
-
+<footer><div class="shell foot"><div><strong>dupeshx.</strong><br>made for all the things I like.</div><div>dupeshx.com • <span id="year"></span></div></div></footer>
+<script>document.getElementById('year').textContent=new Date().getFullYear();const hamburger=document.getElementById('hamburger'),navLinks=document.getElementById('navLinks');hamburger.addEventListener('click',()=>{const open=navLinks.classList.toggle('open');hamburger.classList.toggle('open',open);hamburger.setAttribute('aria-expanded',open);hamburger.setAttribute('aria-label',open?'Close menu':'Open menu')});navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{navLinks.classList.remove('open');hamburger.classList.remove('open');hamburger.setAttribute('aria-expanded','false')}));</script>
 </body>
 </html>
-
