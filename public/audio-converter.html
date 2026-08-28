@@ -8,11 +8,36 @@
     <title>YouTube Video to MP3 Converter</title>
 
     <style>
+        .home-btn {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    z-index: 9999;
+
+    padding: 10px 16px;
+    background: #1769ff;
+    color: white;
+
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+
+    border-radius: 10px;
+    box-shadow: 0 5px 18px rgba(23, 105, 255, 0.25);
+    transition: 0.2s;
+}
+
+.home-btn:hover {
+    transform: translateY(-2px);
+    background: #0d58dc;
+}
         * {
             box-sizing: border-box;
         }
 
         body {
+           
             margin: 0;
             min-height: 100vh;
             display: flex;
@@ -122,7 +147,7 @@
 </head>
 
 <body>
-
+<a href="index.html" class="home-btn">← DupeshX Home</a>
 <div class="converter">
 
     <h1>🎵 YouTube to MP3</h1>
