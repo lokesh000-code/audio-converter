@@ -46,9 +46,37 @@ h2{font-size:clamp(2rem,5vw,3.4rem);letter-spacing:-2px;margin:8px 0 18px}
 .video{aspect-ratio:16/9;background:#eef5ff;border:1px solid var(--line);display:grid;place-items:center;border-radius:9px;position:relative}
 .play{font-size:2.8rem}.video:after{content:"put latest video thumbnail here";position:absolute;bottom:10px;left:12px;color:#6a7a98;font-size:.75rem}
 .ytcopy{align-self:center}.ytcopy p{color:var(--muted);line-height:1.7}
-.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:30px}
-.paper{height:220px;background:#ffffff;color:#12366a;padding:16px;box-shadow:5px 5px 0 #dce8ff;transform:rotate(-1.5deg);display:flex;align-items:flex-end;font-family:"Comic Sans MS",cursive}
-.paper:nth-child(2){transform:rotate(1deg)}.paper:nth-child(3){transform:rotate(-.4deg)}
+.gallery{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+    margin-top:30px;
+}
+
+.paper{
+    height:420px;
+    background:#ffffff;
+    padding:0;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:5px 5px 0 #dce8ff;
+    transform:rotate(-1.5deg);
+}
+
+.paper img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    transition:transform .3s ease;
+}
+
+.paper:hover img{
+    transform:scale(1.04);
+}
+
+.paper:nth-child(2){transform:rotate(1deg)}
+.paper:nth-child(3){transform:rotate(-.4deg)}
 footer{margin-top:50px;border-top:1px solid var(--line);padding:40px 0 55px;color:var(--muted)}
 .foot{display:flex;justify-content:space-between;gap:20px}.foot strong{color:white}
 @media(max-width:760px){.hamburger{display:flex}.navlinks{display:none;position:absolute;top:66px;left:0;right:0;background:rgba(255,255,255,.98);border-bottom:1px solid var(--line);padding:18px 4.5%;flex-direction:column;gap:0}.navlinks.open{display:flex}.navlinks a{padding:14px 0;border-bottom:1px solid var(--line)}.navlinks a:last-child{border-bottom:0}.hero-grid{grid-template-columns:1fr}.profile{max-width:300px;margin:auto;width:80%}.world{grid-template-columns:1fr}.tile:nth-child(1){grid-row:auto;min-height:220px}.tile:nth-child(4){grid-column:auto}.youtube{grid-template-columns:1fr}.gallery{grid-template-columns:1fr}.project-row{grid-template-columns:45px 1fr}.status{grid-column:2}.foot{flex-direction:column}h1{letter-spacing:-3px}}
@@ -126,8 +154,11 @@ section{border-top:1px solid rgba(217,229,247,.55)}
 <section id="art"><div class="shell">
 <div class="label">sketchbook</div><h2>Some art too.</h2>
 <p class="copy">I'll put drawings here instead of hiding them in a folder forever.</p>
-<div class="gallery"><div class="paper">drawing #01 — add photo</div><div class="paper">drawing #02 — add photo</div><div class="paper">something random — add photo</div></div>
-</div></section>
+<div class="gallery">
+    <div class="paper"><img src="fav0.jpg" alt="Drawing 1"></div>
+    <div class="paper"><img src="fav2.jpg" alt="Drawing 2"></div>
+    <div class="paper"><img src="fav3.jpg" alt="Drawing 3"></div>
+</div>
 
 <footer><div class="shell foot"><div><strong>dupeshx.</strong><br>made for all the things I like.</div><div>dupeshx.com • <span id="year"></span></div></div></footer>
 <script>document.getElementById('year').textContent=new Date().getFullYear();const hamburger=document.getElementById('hamburger'),navLinks=document.getElementById('navLinks');hamburger.addEventListener('click',()=>{const open=navLinks.classList.toggle('open');hamburger.classList.toggle('open',open);hamburger.setAttribute('aria-expanded',open);hamburger.setAttribute('aria-label',open?'Close menu':'Open menu')});navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{navLinks.classList.remove('open');hamburger.classList.remove('open');hamburger.setAttribute('aria-expanded','false')}));</script>
